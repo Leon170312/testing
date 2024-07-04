@@ -83,7 +83,7 @@ end)
     Name = "Slider Example",
     Range = {16, 500},
     Increment = 1,
-    Suffix = "Speed",
+    Suffix = "Walk speed",
     CurrentValue = 16,
     Flag = "SliderWS", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
     Callback = function(Value)
