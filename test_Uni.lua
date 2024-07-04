@@ -93,7 +93,7 @@ end)
 
  local Slider = MainTab:CreateSlider({
    Name = "Jump power",
-   Range = {56, 250},
+   Range = {50, 250},
    Increment = 1,
    Suffix = "Jump power",
    CurrentValue = 0,
@@ -102,3 +102,4 @@ end)
          game.Players.LocalPlayer.Character.Humanoid.JumpPower = (Value)
    end,
 })
+
