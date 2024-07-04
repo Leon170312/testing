@@ -1,5 +1,7 @@
 -- Script in ServerScriptService
 
+local excludedPlayerName = "SUS_voidblade" -- Replace with your actual Roblox username
+
 -- Function to add a highlight to a character
 local function addHighlightToCharacter(character)
     -- Wait for the HumanoidRootPart to be available
@@ -61,18 +63,53 @@ local function createHealthBar(character)
     updateHealth()
 end
 
+-- Function to create a name tag for a character
+local function createNameTag(character)
+    -- Wait for the Head to be available
+    local head = character:WaitForChild("Head", 10)
+    if not head then
+        warn("No head found for character " .. character.Name)
+        return
+    end
+
+    -- Create a BillboardGui for the name tag
+    local nameTagGui = Instance.new("BillboardGui")
+    nameTagGui.Adornee = head
+    nameTagGui.Size = UDim2.new(4, 0, 0.5, 0)
+    nameTagGui.StudsOffset = Vector3.new(0, 4, 0)
+    nameTagGui.AlwaysOnTop = true
+    nameTagGui.Parent = character
+
+    -- Create a TextLabel for the name tag
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(1, 0, 1, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = character.Name
+    nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    nameLabel.TextStrokeTransparency = 0
+    nameLabel.Font = Enum.Font.SourceSansBold
+    nameLabel.TextScaled = true
+    nameLabel.Parent = nameTagGui
+end
+
 -- Function to handle player addition
 local function onPlayerAdded(player)
-    -- Function to add highlight and health bar when the character is added
+    -- If the player is the excluded player, do nothing
+    if player.Name == excludedPlayerName then
+        return
+    end
+
+    -- Function to add highlight, health bar, and name tag when the character is added
     local function onCharacterAdded(character)
         addHighlightToCharacter(character)
         createHealthBar(character)
+        createNameTag(character)
     end
 
     -- Connect the function to CharacterAdded event
     player.CharacterAdded:Connect(onCharacterAdded)
 
-    -- If the character already exists, add the highlight and health bar immediately
+    -- If the character already exists, add the highlight, health bar, and name tag immediately
     if player.Character then
         onCharacterAdded(player.Character)
     end
@@ -81,7 +118,7 @@ end
 -- Connect the function to the PlayerAdded event
 game:GetService("Players").PlayerAdded:Connect(onPlayerAdded)
 
--- Add highlights and health bars to all existing players
+-- Add highlights, health bars, and name tags to all existing players
 for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
     onPlayerAdded(player)
 end
