@@ -1,6 +1,6 @@
 -- Script in ServerScriptService
 
-local excludedPlayerName = "SUS_voidblade" -- Replace with your actual Roblox username
+local excludedPlayerName = "Dele_LiamLeon" -- Replace with your actual Roblox username
 
 -- Function to add a highlight to a character
 local function addHighlightToCharacter(character)
