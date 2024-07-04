@@ -14,7 +14,7 @@ local function addHighlightToCharacter(character)
     -- Create a Highlight instance
     local highlight = Instance.new("Highlight")
     highlight.Adornee = character
-    highlight.FillColor = Color3.fromRGB(255, 0, 0) -- Red color
+    highlight.FillColor = Color3.fromRGB(0, 42, 255) -- Red color
     highlight.FillTransparency = 0.5
     highlight.OutlineTransparency = 0.5
     highlight.Parent = character
