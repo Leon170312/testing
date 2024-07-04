@@ -107,7 +107,7 @@ local Dropdown = MainTab:CreateDropdown({
    Name = "Choose",
    Options = {"Infinite yeild","Dark dex"},
    CurrentOption = {"nil"},
-   MultipleOptions = false,
+   MultipleOptions = true,
    Flag = "Dropdown Choose", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
    Callback = function(Option)
       loadstring(game:HttpGet("https://raw.githubusercontent.com/ttwizz/infiniteyield/master/source.lua", true))()
