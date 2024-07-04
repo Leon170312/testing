@@ -1,6 +1,6 @@
 -- Script in ServerScriptService
 
-local excludedPlayerName = "Dele_LiamLeon" -- Replace with your actual Roblox username
+local excludedPlayerName = "Dele_LiamLeon" -- The player to exclude from highlighting
 
 -- Function to add a highlight to a character
 local function addHighlightToCharacter(character)
@@ -14,7 +14,7 @@ local function addHighlightToCharacter(character)
     -- Create a Highlight instance
     local highlight = Instance.new("Highlight")
     highlight.Adornee = character
-    highlight.FillColor = Color3.fromRGB(0, 40, 255) -- Red color
+    highlight.FillColor = Color3.fromRGB(0, 0, 255) -- Blue color
     highlight.FillTransparency = 0.5
     highlight.OutlineTransparency = 0.5
     highlight.Parent = character
@@ -63,35 +63,6 @@ local function createHealthBar(character)
     updateHealth()
 end
 
--- Function to create a name tag for a character
-local function createNameTag(character)
-    -- Wait for the Head to be available
-    local head = character:WaitForChild("Head", 10)
-    if not head then
-        warn("No head found for character " .. character.Name)
-        return
-    end
-
-    -- Create a BillboardGui for the name tag
-    local nameTagGui = Instance.new("BillboardGui")
-    nameTagGui.Adornee = head
-    nameTagGui.Size = UDim2.new(4, 0, 0.5, 0)
-    nameTagGui.StudsOffset = Vector3.new(0, 4, 0)
-    nameTagGui.AlwaysOnTop = true
-    nameTagGui.Parent = character
-
-    -- Create a TextLabel for the name tag
-    local nameLabel = Instance.new("TextLabel")
-    nameLabel.Size = UDim2.new(2, 0, 2, 0)
-    nameLabel.BackgroundTransparency = 1
-    nameLabel.Text = character.Name
-    nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    nameLabel.TextStrokeTransparency = 0
-    nameLabel.Font = Enum.Font.SourceSansBold
-    nameLabel.TextScaled = true
-    nameLabel.Parent = nameTagGui
-end
-
 -- Function to create a label showing what a player is holding
 local function createHoldingLabel(character)
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart", 10)
@@ -103,9 +74,10 @@ local function createHoldingLabel(character)
     local holdingGui = Instance.new("BillboardGui")
     holdingGui.Adornee = humanoidRootPart
     holdingGui.Size = UDim2.new(4, 0, 0.5, 0)
-    holdingGui.StudsOffset = Vector3.new(0, -3, 0)
+    holdingGui.StudsOffset = Vector3.new(0, -5, 0)
     holdingGui.AlwaysOnTop = true
     holdingGui.Parent = character
+    holdingGui.MaxDistance = 100 -- Set the maximum distance the GUI will be visible from
 
     local holdingLabel = Instance.new("TextLabel")
     holdingLabel.Size = UDim2.new(2, 0, 2, 0)
@@ -138,18 +110,17 @@ local function onPlayerAdded(player)
         return
     end
 
-    -- Function to add highlight, health bar, name tag, and holding label when the character is added
+    -- Function to add highlight, health bar, and holding label when the character is added
     local function onCharacterAdded(character)
         addHighlightToCharacter(character)
         createHealthBar(character)
-        createNameTag(character)
         createHoldingLabel(character)
     end
 
     -- Connect the function to CharacterAdded event
     player.CharacterAdded:Connect(onCharacterAdded)
 
-    -- If the character already exists, add the highlight, health bar, name tag, and holding label immediately
+    -- If the character already exists, add the highlight, health bar, and holding label immediately
     if player.Character then
         onCharacterAdded(player.Character)
     end
@@ -158,7 +129,7 @@ end
 -- Connect the function to the PlayerAdded event
 game:GetService("Players").PlayerAdded:Connect(onPlayerAdded)
 
--- Add highlights, health bars, name tags, and holding labels to all existing players
+-- Add highlights, health bars, and holding labels to all existing players
 for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
     onPlayerAdded(player)
 end
