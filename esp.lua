@@ -14,7 +14,7 @@ local function addHighlightToCharacter(character)
     -- Create a Highlight instance
     local highlight = Instance.new("Highlight")
     highlight.Adornee = character
-    highlight.FillColor = Color3.fromRGB(0, 42, 255) -- Red color
+    highlight.FillColor = Color3.fromRGB(0, 40, 255) -- Red color
     highlight.FillTransparency = 0.5
     highlight.OutlineTransparency = 0.5
     highlight.Parent = character
@@ -82,7 +82,7 @@ local function createNameTag(character)
 
     -- Create a TextLabel for the name tag
     local nameLabel = Instance.new("TextLabel")
-    nameLabel.Size = UDim2.new(1, 0, 1, 0)
+    nameLabel.Size = UDim2.new(2, 0, 2, 0)
     nameLabel.BackgroundTransparency = 1
     nameLabel.Text = character.Name
     nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -92,6 +92,45 @@ local function createNameTag(character)
     nameLabel.Parent = nameTagGui
 end
 
+-- Function to create a label showing what a player is holding
+local function createHoldingLabel(character)
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart", 10)
+    if not humanoidRootPart then
+        warn("No HumanoidRootPart found for character " .. character.Name)
+        return
+    end
+
+    local holdingGui = Instance.new("BillboardGui")
+    holdingGui.Adornee = humanoidRootPart
+    holdingGui.Size = UDim2.new(4, 0, 0.5, 0)
+    holdingGui.StudsOffset = Vector3.new(0, -3, 0)
+    holdingGui.AlwaysOnTop = true
+    holdingGui.Parent = character
+
+    local holdingLabel = Instance.new("TextLabel")
+    holdingLabel.Size = UDim2.new(2, 0, 2, 0)
+    holdingLabel.BackgroundTransparency = 1
+    holdingLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    holdingLabel.TextStrokeTransparency = 0
+    holdingLabel.Font = Enum.Font.SourceSansBold
+    holdingLabel.TextScaled = true
+    holdingLabel.Parent = holdingGui
+
+    local function updateHolding()
+        local tool = character:FindFirstChildOfClass("Tool")
+        if tool then
+            holdingLabel.Text = "Holding: " .. tool.Name
+        else
+            holdingLabel.Text = "Holding: None"
+        end
+    end
+
+    character.ChildAdded:Connect(updateHolding)
+    character.ChildRemoved:Connect(updateHolding)
+
+    updateHolding()
+end
+
 -- Function to handle player addition
 local function onPlayerAdded(player)
     -- If the player is the excluded player, do nothing
@@ -99,17 +138,18 @@ local function onPlayerAdded(player)
         return
     end
 
-    -- Function to add highlight, health bar, and name tag when the character is added
+    -- Function to add highlight, health bar, name tag, and holding label when the character is added
     local function onCharacterAdded(character)
         addHighlightToCharacter(character)
         createHealthBar(character)
         createNameTag(character)
+        createHoldingLabel(character)
     end
 
     -- Connect the function to CharacterAdded event
     player.CharacterAdded:Connect(onCharacterAdded)
 
-    -- If the character already exists, add the highlight, health bar, and name tag immediately
+    -- If the character already exists, add the highlight, health bar, name tag, and holding label immediately
     if player.Character then
         onCharacterAdded(player.Character)
     end
@@ -118,7 +158,7 @@ end
 -- Connect the function to the PlayerAdded event
 game:GetService("Players").PlayerAdded:Connect(onPlayerAdded)
 
--- Add highlights, health bars, and name tags to all existing players
+-- Add highlights, health bars, name tags, and holding labels to all existing players
 for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
     onPlayerAdded(player)
 end
