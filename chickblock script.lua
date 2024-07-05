@@ -220,3 +220,45 @@ end)
  
     end,
  })
+
+ local Button = MainTab:CreateButton({
+    Name = "ESP",
+    Callback = function()
+        local Players = game:GetService("Players")
+
+        local function highlightCharacter(character)
+            -- Create a Highlight instance
+            local highlight = Instance.new("Highlight")
+            highlight.Adornee = character
+            highlight.FillColor = Color3.fromRGB(255, 0, 0) -- Red color
+            highlight.FillTransparency = 0.5
+            highlight.OutlineTransparency = 0.5
+            highlight.Parent = character
+        end
+        
+        local function onPlayerAdded(player)
+            if player.Name ~= "Dele_LiamLeon" then
+                -- Function to add highlight when the character is added
+                local function onCharacterAdded(character)
+                    highlightCharacter(character)
+                end
+        
+                -- Connect the function to CharacterAdded event
+                player.CharacterAdded:Connect(onCharacterAdded)
+                
+                -- If the character already exists, add the highlight immediately
+                if player.Character then
+                    highlightCharacter(player.Character)
+                end
+            end
+        end
+        
+        -- Connect the function to the PlayerAdded event
+        Players.PlayerAdded:Connect(onPlayerAdded)
+        
+        -- Add highlights to all existing players
+        for _, player in ipairs(Players:GetPlayers()) do
+            onPlayerAdded(player)
+        end        
+    end,
+ })
