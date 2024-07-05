@@ -164,7 +164,7 @@ local function decreaseSpeed()
     local currentSpeed = humanoid.WalkSpeed
 
     -- Ensure the speed does not go below a reasonable limit
-    local newSpeed = math.max(0, currentSpeed - 10)
+    local newSpeed = math.max(16, currentSpeed - 10)
     humanoid.WalkSpeed = newSpeed
     print("Decreased speed by 10. New speed:", humanoid.WalkSpeed)
 end
@@ -183,53 +183,39 @@ end)
    end,
 })
 
--- Create the slider
-local Slider = OtherTab:CreateSlider({
-   Name = "Spinning Speed",
-   Range = {0, 5000},
-   Increment = 10,
-   Suffix = "Speed",
-   CurrentValue = 0,
-   Flag = "SpinSpeed", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Value)
-       -- The function that takes place when the slider changes
-       -- The variable (Value) is a number which correlates to the value the slider is currently at
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
 
-       local Players = game:GetService("Players")
-       local player = Players.LocalPlayer
-       local character = player.Character or player.CharacterAdded:Wait()
-       local hrp = character:WaitForChild("HumanoidRootPart")
+local spinning = false
 
-       -- Ensure there is a BodyGyro in the HumanoidRootPart
-       local bodyGyro = hrp:FindFirstChild("BodyGyro")
-       if not bodyGyro then
-           bodyGyro = Instance.new("BodyGyro")
-           bodyGyro.P = 10000
-           bodyGyro.D = 0
-           bodyGyro.MaxTorque = Vector3.new(0, math.huge, 0) -- Only allow rotation on Y axis
-           bodyGyro.Parent = hrp
-       end
-
-       -- Set the angular velocity based on the slider value
-       bodyGyro.CFrame = hrp.CFrame
-       bodyGyro.AngularVelocity = Vector3.new(0, -Value, 0) -- Spin speed is set to the slider value (negative for left spin)
-       
-       -- Print the new spin speed to confirm the change (optional)
-       print("New spinning speed set to:", Value)
-   end,
-})
-
--- Add a collision detection script to fling other players away
 local function onTouched(other)
     local character = other.Parent
     if character and character:FindFirstChild("Humanoid") then
-        local hrp = character:FindFirstChild("HumanoidRootPart")
-        if hrp then
+        local hrp = player.Character:WaitForChild("HumanoidRootPart")
+
+        -- Ensure there is a BodyGyro in the HumanoidRootPart
+        local bodyGyro = hrp:FindFirstChild("BodyGyro")
+        if not bodyGyro then
+            bodyGyro = Instance.new("BodyGyro")
+            bodyGyro.P = 10000
+            bodyGyro.D = 0
+            bodyGyro.MaxTorque = Vector3.new(0, math.huge, 0) -- Only allow rotation on Y axis
+            bodyGyro.Parent = hrp
+        end
+
+        -- Set the angular velocity to maximum when touched
+        if spinning then
+            bodyGyro.CFrame = hrp.CFrame
+            bodyGyro.AngularVelocity = Vector3.new(0, -5000, 0) -- Maximum spin speed (negative for left spin)
+        end
+
+        local hrpOther = character:FindFirstChild("HumanoidRootPart")
+        if hrpOther then
             local bodyVelocity = Instance.new("BodyVelocity")
-            bodyVelocity.Velocity = (hrp.Position - script.Parent.Position).unit * 100 -- Adjust the force as needed
+            bodyVelocity.Velocity = (hrpOther.Position - hrp.Position).unit * 100 -- Adjust the force as needed
             bodyVelocity.P = 10000
             bodyVelocity.MaxForce = Vector3.new(100000, 100000, 100000)
-            bodyVelocity.Parent = hrp
+            bodyVelocity.Parent = hrpOther
 
             -- Remove the BodyVelocity after a short time
             game:GetService("Debris"):AddItem(bodyVelocity, 0.1)
@@ -237,9 +223,26 @@ local function onTouched(other)
     end
 end
 
--- Connect the collision detection to the HumanoidRootPart
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
+local function stopSpinning()
+    local hrp = player.Character:WaitForChild("HumanoidRootPart")
+    local bodyGyro = hrp:FindFirstChild("BodyGyro")
+    if bodyGyro then
+        bodyGyro.AngularVelocity = Vector3.new(0, 0, 0) -- Stop spinning
+    end
+end
+
+local Toggle = OtherTab:CreateToggle({
+    Name = "Spinning Fling",
+    CurrentValue = false,
+    Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+        spinning = Value
+        if not spinning then
+            stopSpinning()
+        end
+    end,
+})
+
 local character = player.Character or player.CharacterAdded:Wait()
 local hrp = character:WaitForChild("HumanoidRootPart")
 hrp.Touched:Connect(onTouched)
