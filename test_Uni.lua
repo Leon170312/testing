@@ -156,15 +156,29 @@ local Button = OtherTab:CreateButton({
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
 
+-- Function to decrease speed
 local function decreaseSpeed()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
     local currentSpeed = humanoid.WalkSpeed
-    humanoid.WalkSpeed = currentSpeed - 10
+
+    -- Ensure the speed does not go below a reasonable limit
+    local newSpeed = math.max(0, currentSpeed - 10)
+    humanoid.WalkSpeed = newSpeed
     print("Decreased speed by 10. New speed:", humanoid.WalkSpeed)
 end
 
-decreaseSpeed()
+-- Connect the function to the character's humanoid if already loaded
+if player.Character and player.Character:FindFirstChild("Humanoid") then
+    decreaseSpeed()
+end
+
+-- Listen for when the character spawns
+player.CharacterAdded:Connect(function(character)
+    character:WaitForChild("Humanoid") -- Ensure humanoid is loaded
+    decreaseSpeed()
+end)
+
    end,
 })
