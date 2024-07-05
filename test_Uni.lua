@@ -182,3 +182,39 @@ end)
 
    end,
 })
+
+-- Create the slider
+local Slider = OtherTab:CreateSlider({
+   Name = "Spinning Speed",
+   Range = {0, 5000},
+   Increment = 10,
+   Suffix = "Speed",
+   CurrentValue = 0,
+   Flag = "SpinSpeed", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+       -- The function that takes place when the slider changes
+       -- The variable (Value) is a number which correlates to the value the slider is currently at
+
+       local Players = game:GetService("Players")
+       local player = Players.LocalPlayer
+       local character = player.Character or player.CharacterAdded:Wait()
+       local hrp = character:WaitForChild("HumanoidRootPart")
+
+       -- Ensure there is a BodyGyro in the HumanoidRootPart
+       local bodyGyro = hrp:FindFirstChild("BodyGyro")
+       if not bodyGyro then
+           bodyGyro = Instance.new("BodyGyro")
+           bodyGyro.P = 10000
+           bodyGyro.D = 0
+           bodyGyro.MaxTorque = Vector3.new(0, math.huge, 0) -- Only allow rotation on Y axis
+           bodyGyro.Parent = hrp
+       end
+
+       -- Set the angular velocity based on the slider value
+       bodyGyro.CFrame = hrp.CFrame
+       bodyGyro.AngularVelocity = Vector3.new(0, Value, 0) -- Spin speed is set to the slider value
+       
+       -- Print the new spin speed to confirm the change (optional)
+       print("New spinning speed set to:", Value)
+   end,
+})
