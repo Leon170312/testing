@@ -102,6 +102,7 @@ end)
          game.Players.LocalPlayer.Character.Humanoid.JumpPower = (Value)
    end,
 })
+
 local Slider = MainTab:CreateSlider({
    Name = "Gravity",
    Range = {196.2, -5000},
