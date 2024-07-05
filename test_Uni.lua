@@ -212,9 +212,34 @@ local Slider = OtherTab:CreateSlider({
 
        -- Set the angular velocity based on the slider value
        bodyGyro.CFrame = hrp.CFrame
-       bodyGyro.AngularVelocity = Vector3.new(0, Value, 0) -- Spin speed is set to the slider value
+       bodyGyro.AngularVelocity = Vector3.new(0, -Value, 0) -- Spin speed is set to the slider value (negative for left spin)
        
        -- Print the new spin speed to confirm the change (optional)
        print("New spinning speed set to:", Value)
    end,
 })
+
+-- Add a collision detection script to fling other players away
+local function onTouched(other)
+    local character = other.Parent
+    if character and character:FindFirstChild("Humanoid") then
+        local hrp = character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local bodyVelocity = Instance.new("BodyVelocity")
+            bodyVelocity.Velocity = (hrp.Position - script.Parent.Position).unit * 100 -- Adjust the force as needed
+            bodyVelocity.P = 10000
+            bodyVelocity.MaxForce = Vector3.new(100000, 100000, 100000)
+            bodyVelocity.Parent = hrp
+
+            -- Remove the BodyVelocity after a short time
+            game:GetService("Debris"):AddItem(bodyVelocity, 0.1)
+        end
+    end
+end
+
+-- Connect the collision detection to the HumanoidRootPart
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+hrp.Touched:Connect(onTouched)
