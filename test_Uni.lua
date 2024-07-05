@@ -124,3 +124,47 @@ local Slider = MainTab:CreateSlider({
 
 -- Ensure the gravity is set to the initial value at the start
 workspace.Gravity = Slider.CurrentValue
+
+
+local OtherTab = Window:CreateTab("Other|✔", nil) -- Title, Image
+local OtherSection = OtherTab:CreateSection("Other")
+
+local Button = OtherTab:CreateButton({
+   Name = "5 more speed",
+   Callback = function()
+   -- Script to increase player's speed by 5
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+local function increaseSpeed()
+    local currentSpeed = humanoid.WalkSpeed
+    humanoid.WalkSpeed = currentSpeed + 5
+    print("Increased speed by 5. New speed:", humanoid.WalkSpeed)
+end
+
+increaseSpeed()
+   end,
+})
+
+local Button = OtherTab:CreateButton({
+   Name = "10 less speed",
+   Callback = function()
+   -- Script to decrease player's speed by 10
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+local function decreaseSpeed()
+    local currentSpeed = humanoid.WalkSpeed
+    humanoid.WalkSpeed = currentSpeed - 10
+    print("Decreased speed by 10. New speed:", humanoid.WalkSpeed)
+end
+
+decreaseSpeed()
+   end,
+})
