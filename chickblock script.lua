@@ -132,8 +132,8 @@ local Window = Rayfield:CreateWindow({
    end,
 })
 
-local Button = MainTab:CreateButton({
-    Name = "ESP",
+local Button = Tab:CreateButton({
+    Name = "Button Example",
     Callback = function()
         local Players = game:GetService("Players")
 
