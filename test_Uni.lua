@@ -1,53 +1,141 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-    Name = "Universal | Leon",
-    LoadingTitle = "Universal hub",
+    Name = "🔫|ChicBlocko|🔫",
+    LoadingTitle = "This script on top fr",
     LoadingSubtitle = "by Leon",
     ConfigurationSaving = {
-       Enabled = false,
+       Enabled = true,
        FolderName = nil, -- Create a custom folder for your hub/game
        FileName = "Big Hub"
     },
     Discord = {
        Enabled = true,
-       Invite = "https://discord.gg/GumK644J", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
+       Invite = "pm9QCqsy", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
        RememberJoins = true -- Set this to false to make them join the discord every time they load it up
     },
     KeySystem = true, -- Set this to true to use our key system
     KeySettings = {
-       Title = "Key system",
+       Title = "ChicBlocko script",
        Subtitle = "Key System",
-       Note = "Check Discord",
+       Note = "Join the discord",
        FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
        SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
        GrabKeyFromSite = true, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-       Key = {"https://pastebin.com/raw/f6rwKNfZ"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+       Key = {"https://pastebin.com/raw/vs74M0W8"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
     }
  })
 
+ --Main
  local MainTab = Window:CreateTab("Main|🏡", nil) -- Title, Image
  local MainSection = MainTab:CreateSection("Main")
 
- Rayfield:Notify({
-    Title = "Test GUI",
-    Content = "This is just a test GUI!",
-    Duration = 5,
-    Image = nil,
-    Actions = { -- Notification Buttons
-       Ignore = {
-          Name = "Okay!",
-          Callback = function()
-          print("The user tapped Okay!")
-       end
-    },
- },
- })
+ local Button = MainTab:CreateButton({
+   Name = "Aimbot",
+   Callback = function()
+      local Camera = workspace.CurrentCamera
+      local Players = game:GetService("Players")
+      local RunService = game:GetService("RunService")
+      local UserInputService = game:GetService("UserInputService")
+      local TweenService = game:GetService("TweenService")
+      local StarterGui = game:GetService("StarterGui")
+      local LocalPlayer = Players.LocalPlayer
+      local Holding = false
+      local CurrentTarget = nil
+      
+      _G.AimbotEnabled = true
+      _G.TeamCheck = false -- If set to true then the script would only lock your aim at enemy team members.
+      _G.AimPart = "Head" -- Where the aimbot script would lock at.
+      _G.Sensitivity = 0 -- How many seconds it takes for the aimbot script to officially lock onto the target's aimpart.
+      
+      local function GetClosestPlayer()
+          local MaximumDistance = math.huge
+          local Target = nil
+        
+          coroutine.wrap(function()
+              wait(20); MaximumDistance = math.huge -- Reset the MaximumDistance so that the Aimbot doesn't remember it as a very small variable and stop capturing players...
+          end)()
+      
+          for _, v in next, Players:GetPlayers() do
+              if v.Name ~= LocalPlayer.Name then
+                  if _G.TeamCheck == true then
+                      if v.Team ~= LocalPlayer.Team then
+                          if v.Character ~= nil then
+                              if v.Character:FindFirstChild("HumanoidRootPart") ~= nil then
+                                  if v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("Humanoid").Health ~= 0 then
+                                      local ScreenPoint = Camera:WorldToScreenPoint(v.Character:WaitForChild("HumanoidRootPart", math.huge).Position)
+                                      local VectorDistance = (Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y) - Vector2.new(ScreenPoint.X, ScreenPoint.Y)).Magnitude
+                                      
+                                      if VectorDistance < MaximumDistance then
+                                          Target = v
+                                          MaximumDistance = VectorDistance
+                                      end
+                                  end
+                              end
+                          end
+                      end
+                  else
+                      if v.Character ~= nil then
+                          if v.Character:FindFirstChild("HumanoidRootPart") ~= nil then
+                              if v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("Humanoid").Health ~= 0 then
+                                  local ScreenPoint = Camera:WorldToScreenPoint(v.Character:WaitForChild("HumanoidRootPart", math.huge).Position)
+                                  local VectorDistance = (Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y) - Vector2.new(ScreenPoint.X, ScreenPoint.Y)).Magnitude
+                                  
+                                  if VectorDistance < MaximumDistance then
+                                      Target = v
+                                      MaximumDistance = VectorDistance
+                                  end
+                              end
+                          end
+                      end
+                  end
+              end
+          end
+      
+          return Target
+      end
+      
+      UserInputService.InputBegan:Connect(function(Input)
+          if Input.UserInputType == Enum.UserInputType.MouseButton2 then
+              Holding = true
+              if _G.AimbotEnabled and not CurrentTarget then
+                  CurrentTarget = GetClosestPlayer()
+              end
+          elseif Input.KeyCode == Enum.KeyCode.X then
+              _G.AimbotEnabled = not _G.AimbotEnabled
+              local message = _G.AimbotEnabled and "Aimbot On" or "Aimbot Off"
+              StarterGui:SetCore("SendNotification", {
+                  Title = "Notification";
+                  Text = message;
+                  Duration = 2;
+                  Position = "BottomRight";
+              })
+          end
+      end)
+      
+      UserInputService.InputEnded:Connect(function(Input)
+          if Input.UserInputType == Enum.UserInputType.MouseButton2 then
+              Holding = false
+              CurrentTarget = nil
+          end
+      end)
+      
+      RunService.RenderStepped:Connect(function()
+          if Holding == true and _G.AimbotEnabled == true then
+              if CurrentTarget and CurrentTarget.Character and CurrentTarget.Character:FindFirstChild(_G.AimPart) then
+                  TweenService:Create(Camera, TweenInfo.new(_G.Sensitivity, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {CFrame = CFrame.new(Camera.CFrame.Position, CurrentTarget.Character[_G.AimPart].Position)}):Play()
+              else
+                  CurrentTarget = nil
+              end
+          end
+      end)
+   end,
+})
 
  local Button = MainTab:CreateButton({
-    Name = "Inf jump",
+    Name = "Infinite jump",
     Callback = function()
-        -- Press [T] to turn off and to turn on
+    -- Press [T] to turn off and to turn on
  
 _G.infinjump = true
  
@@ -79,170 +167,56 @@ end)
     end,
  })
 
- local Slider = MainTab:CreateSlider({
-    Name = "Slider Example",
-    Range = {16, 500},
-    Increment = 1,
-    Suffix = "Walk speed",
-    CurrentValue = 0,
-    Flag = "SliderWS", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-    Callback = function(Value)
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Value)
+ local Button = MainTab:CreateButton({
+    Name = "5 more speed",
+    Callback = function()
+    -- Script to increase player's speed by 5
+ 
+ local Players = game:GetService("Players")
+ local player = Players.LocalPlayer
+ local character = player.Character or player.CharacterAdded:Wait()
+ local humanoid = character:WaitForChild("Humanoid")
+ 
+ local function increaseSpeed()
+     local currentSpeed = humanoid.WalkSpeed
+     humanoid.WalkSpeed = currentSpeed + 5
+     print("Increased speed by 5. New speed:", humanoid.WalkSpeed)
+ end
+ 
+ increaseSpeed()
     end,
  })
 
- local Slider = MainTab:CreateSlider({
-   Name = "Jump power",
-   Range = {50, 250},
-   Increment = 1,
-   Suffix = "Jump power",
-   CurrentValue = 0,
-   Flag = "SliderJP", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Value)
-         game.Players.LocalPlayer.Character.Humanoid.JumpPower = (Value)
-   end,
-})
-
-local Slider = MainTab:CreateSlider({
-   Name = "Gravity",
-   Range = {196.2, -5000},
-   Increment = 1,
-   Suffix = "Slider Gravity",
-   CurrentValue = 196.2,
-   Flag = "SG", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Value)
-       -- The function that takes place when the slider changes
-       -- The variable (Value) is a number which correlates to the value the slider is currently at
-
-       -- Set the gravity to the slider's current value
-       workspace.Gravity = Value
-       
-       -- Print the new gravity to confirm the change (optional)
-       print("New gravity set to:", workspace.Gravity)
-   end,
-})
-
--- Ensure the gravity is set to the initial value at the start
-workspace.Gravity = Slider.CurrentValue
-
-
-local OtherTab = Window:CreateTab("Other|✔", nil) -- Title, Image
-local OtherSection = OtherTab:CreateSection("Other")
-
-local Button = OtherTab:CreateButton({
-   Name = "5 more speed",
-   Callback = function()
-   -- Script to increase player's speed by 5
-
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
-
-local function increaseSpeed()
-    local currentSpeed = humanoid.WalkSpeed
-    humanoid.WalkSpeed = currentSpeed + 5
-    print("Increased speed by 5. New speed:", humanoid.WalkSpeed)
-end
-
-increaseSpeed()
-   end,
-})
-
-local Button = OtherTab:CreateButton({
-   Name = "10 less speed",
-   Callback = function()
-   -- Script to decrease player's speed by 10
-
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-
--- Function to decrease speed
-local function decreaseSpeed()
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:WaitForChild("Humanoid")
-    local currentSpeed = humanoid.WalkSpeed
-
-    -- Ensure the speed does not go below a reasonable limit
-    local newSpeed = math.max(16, currentSpeed - 10)
-    humanoid.WalkSpeed = newSpeed
-    print("Decreased speed by 10. New speed:", humanoid.WalkSpeed)
-end
-
--- Connect the function to the character's humanoid if already loaded
-if player.Character and player.Character:FindFirstChild("Humanoid") then
-    decreaseSpeed()
-end
-
--- Listen for when the character spawns
-player.CharacterAdded:Connect(function(character)
-    character:WaitForChild("Humanoid") -- Ensure humanoid is loaded
-    decreaseSpeed()
-end)
-
-   end,
-})
-
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-
-local spinning = false
-
-local function onTouched(other)
-    local character = other.Parent
-    if character and character:FindFirstChild("Humanoid") then
-        local hrp = player.Character:WaitForChild("HumanoidRootPart")
-
-        -- Ensure there is a BodyGyro in the HumanoidRootPart
-        local bodyGyro = hrp:FindFirstChild("BodyGyro")
-        if not bodyGyro then
-            bodyGyro = Instance.new("BodyGyro")
-            bodyGyro.P = 10000
-            bodyGyro.D = 0
-            bodyGyro.MaxTorque = Vector3.new(0, math.huge, 0) -- Only allow rotation on Y axis
-            bodyGyro.Parent = hrp
-        end
-
-        -- Set the angular velocity to maximum when touched
-        if spinning then
-            bodyGyro.CFrame = hrp.CFrame
-            bodyGyro.AngularVelocity = Vector3.new(0, -5000, 0) -- Maximum spin speed (negative for left spin)
-        end
-
-        local hrpOther = character:FindFirstChild("HumanoidRootPart")
-        if hrpOther then
-            local bodyVelocity = Instance.new("BodyVelocity")
-            bodyVelocity.Velocity = (hrpOther.Position - hrp.Position).unit * 100 -- Adjust the force as needed
-            bodyVelocity.P = 10000
-            bodyVelocity.MaxForce = Vector3.new(100000, 100000, 100000)
-            bodyVelocity.Parent = hrpOther
-
-            -- Remove the BodyVelocity after a short time
-            game:GetService("Debris"):AddItem(bodyVelocity, 0.1)
-        end
-    end
-end
-
-local function stopSpinning()
-    local hrp = player.Character:WaitForChild("HumanoidRootPart")
-    local bodyGyro = hrp:FindFirstChild("BodyGyro")
-    if bodyGyro then
-        bodyGyro.AngularVelocity = Vector3.new(0, 0, 0) -- Stop spinning
-    end
-end
-
-local Toggle = OtherTab:CreateToggle({
-    Name = "Spinning Fling",
-    CurrentValue = false,
-    Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-    Callback = function(Value)
-        spinning = Value
-        if not spinning then
-            stopSpinning()
-        end
+ local Button = MainTab:CreateButton({
+    Name = "10 less speed",
+    Callback = function()
+    -- Script to decrease player's speed by 10
+ 
+ local Players = game:GetService("Players")
+ local player = Players.LocalPlayer
+ 
+ -- Function to decrease speed
+ local function decreaseSpeed()
+     local character = player.Character or player.CharacterAdded:Wait()
+     local humanoid = character:WaitForChild("Humanoid")
+     local currentSpeed = humanoid.WalkSpeed
+ 
+     -- Ensure the speed does not go below a reasonable limit
+     local newSpeed = math.max(16, currentSpeed - 10)
+     humanoid.WalkSpeed = newSpeed
+     print("Decreased speed by 10. New speed:", humanoid.WalkSpeed)
+ end
+ 
+ -- Connect the function to the character's humanoid if already loaded
+ if player.Character and player.Character:FindFirstChild("Humanoid") then
+     decreaseSpeed()
+ end
+ 
+ -- Listen for when the character spawns
+ player.CharacterAdded:Connect(function(character)
+     character:WaitForChild("Humanoid") -- Ensure humanoid is loaded
+     decreaseSpeed()
+ end)
+ 
     end,
-})
-
-local character = player.Character or player.CharacterAdded:Wait()
-local hrp = character:WaitForChild("HumanoidRootPart")
-hrp.Touched:Connect(onTouched)
+ })
