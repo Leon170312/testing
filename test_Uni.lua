@@ -102,3 +102,24 @@ end)
          game.Players.LocalPlayer.Character.Humanoid.JumpPower = (Value)
    end,
 })
+local Slider = MainTab:CreateSlider({
+   Name = "Gravity",
+   Range = {196.2, -5000},
+   Increment = 1,
+   Suffix = "Slider Gravity",
+   CurrentValue = 196.2,
+   Flag = "SG", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+       -- The function that takes place when the slider changes
+       -- The variable (Value) is a number which correlates to the value the slider is currently at
+
+       -- Set the gravity to the slider's current value
+       workspace.Gravity = Value
+       
+       -- Print the new gravity to confirm the change (optional)
+       print("New gravity set to:", workspace.Gravity)
+   end,
+})
+
+-- Ensure the gravity is set to the initial value at the start
+workspace.Gravity = Slider.CurrentValue
