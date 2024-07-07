@@ -366,13 +366,25 @@ end
  local Button = MainTab:CreateButton({
     Name = "Check all players Inventory",
     Callback = function()
-        for _, player in pairs(game.Players:GetPlayers()) do
-            wait(0)
-            print("Checking ".. player.Name.. "'s Inventory")
+        local function checkPlayerInventories()
+    local players = game.Players:GetPlayers()
+    
+    for _, player in ipairs(players) do
+        print("Checking " .. player.Name .. "'s Inventory")
         
-            for _, item in pairs(player.Backpack:GetChildren()) do
-                print("Found: ".. item.Name.. " in ".. player.Name.. "'s Backpack")
+        local backpack = player.Backpack
+        if backpack then
+            for _, item in ipairs(backpack:GetChildren()) do
+                print("Found: " .. item.Name .. " in " .. player.Name .. "'s Backpack")
             end
+        else
+            print(player.Name .. " has no backpack.")
         end
+        
+        print("---------------------------------")
+    end
+end
+
+checkPlayerInventories()
     end,
  })
