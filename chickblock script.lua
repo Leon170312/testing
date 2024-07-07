@@ -367,7 +367,7 @@ end
     Name = "Check all players Inventory",
     Callback = function()
         for _, player in pairs(game.Players:GetPlayers()) do
-            wait(0.1)
+            wait(0)
             print("Checking ".. player.Name.. "'s Inventory")
         
             for _, item in pairs(player.Backpack:GetChildren()) do
