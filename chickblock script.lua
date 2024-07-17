@@ -225,7 +225,7 @@ end)
     Name = "ESP",
     Callback = function()
     
--- Script in ServerScriptService
+while true do
 
 local excludedPlayerName = "Dele_LiamLeon" -- The player to exclude from highlighting
 
@@ -360,6 +360,8 @@ game:GetService("Players").PlayerAdded:Connect(onPlayerAdded)
 for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
     onPlayerAdded(player)
 end
+                task.wait(10)
+            end
     end,
  })
 
