@@ -392,7 +392,7 @@ checkPlayerInventories()
  })
 
 local Button = MainTab:CreateButton({
-   Name = "Button Example",
+   Name = "Hitbox",
    Callback = function()
    local InfiniteJumpEnabled = true
 game:GetService("UserInputService").JumpRequest:connect(function()
