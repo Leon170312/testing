@@ -70,7 +70,7 @@
               _G.AimbotEnabled = not _G.AimbotEnabled
               local message = _G.AimbotEnabled and "On" or "Off"
               StarterGui:SetCore("SendNotification", {
-                  Title = "Notification";
+                  Title = "Aimbot";
                   Text = message;
                   Duration = 2;
                   Position = "BottomRight";
